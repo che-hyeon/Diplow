@@ -13,16 +13,22 @@ class Nation(models.Model):
     nation_info = models.TextField(verbose_name="국가 정보")
     # nation_image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "(국가관련 모델) Nations"
+
     def __str__(self):
-        return self.nation_name
+        return f"{self.nation_name}"
     
 class LocalGoverment(models.Model):
     local_id = models.AutoField(primary_key=True)
     local_name = models.CharField(max_length=50, verbose_name="지방자치단체 이름")
     # local_image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
     
+    class Meta:
+        verbose_name_plural = "(지자체관련 모델) LocalGoverments"
+    
     def __str__(self):
-        return self.local_name
+        return f"{self.local_name}"
 
 class NationDashboard(models.Model):
     nation_dash_id = models.AutoField(primary_key=True)
@@ -35,8 +41,11 @@ class NationDashboard(models.Model):
     nation_num_tend = models.TextField(verbose_name="교류 사업 수 추이 설명")
     # dash_image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "(국가관련 모델) NationDashboards"
+
     def __str__(self):
-        return f"{self.nation} 대시보드"
+        return f"{self.nation_dash_id} : {self.nation} 대시보드"
 
 class LocalDashboard(models.Model):
     local_dash_id = models.AutoField(primary_key=True)
@@ -50,8 +59,11 @@ class LocalDashboard(models.Model):
     local_category_explain = models.TextField(verbose_name="주요 교류 분야 설명")
     local_vision_explain = models.TextField(verbose_name="비전 설명")
 
+    class Meta:
+        verbose_name_plural = "(지자체관련 모델) LocalDashboards"
+
     def __str__(self):
-        return f"{self.local} 대시보드"
+        return f"{self.local_dash_id} : {self.local} 대시보드"
 
 class ExchangeData(models.Model):
     CATEGORIES = [
@@ -72,8 +84,11 @@ class ExchangeData(models.Model):
     others = models.TextField(verbose_name="기타사항")
     pub_date = models.DateField(verbose_name="등록일")
 
+    class Meta:
+        verbose_name_plural = "[공공데이터] (국가관련 모델) ExchangeDatas"
+
     def __str__(self):
-        return f"{self.exchange_nation} - {self.get_exchange_category_display()} - {self.exchange_name_kr}"
+        return f"{self.exchange_id} : {self.exchange_nation} - {self.get_exchange_category_display()} - {self.exchange_name_kr}"
     
 class LocalData(models.Model):
     LOCAL_CATEGORIES = [
@@ -87,8 +102,11 @@ class LocalData(models.Model):
     category = models.CharField(max_length=50, choices=LOCAL_CATEGORIES, verbose_name="도시 구분")
     agreement_date = models.DateField(verbose_name="결연일자")
 
+    class Meta:
+        verbose_name_plural = "[공공데이터] (지자체관련 모델) LocalDatas"
+
     def __str__(self):
-        return f"{self.origin_city} - {self.partner_city} {"("+self.get_category_display()+")"}"
+        return f"{self.local_data_id} : {self.origin_city} - {self.partner_city} {"("+self.get_category_display()+")"}"
 
 # 주요 교류 분야
 class ExchangeCategory(models.Model):
@@ -99,16 +117,17 @@ class ExchangeCategory(models.Model):
         ('system', '제도/행정/포용'),
         ('etc', '기타'),
     ]
-
+    exchange_category_id = models.AutoField(primary_key=True)
     local = models.ForeignKey(LocalGoverment, on_delete=models.CASCADE, related_name='exchange_category_relations')
     exchange_name = models.CharField(max_length=50, choices=CATEGORIES, verbose_name="교류 분야 이름")
     exchange_num = models.PositiveIntegerField(verbose_name="교류 분야 수(또는 순위)")
 
     class Meta:
         unique_together = ('local', 'exchange_name') 
+        verbose_name_plural = "(지자체관련 모델) ExchangeCategories"
 
     def __str__(self):
-        return f"{self.local} - {self.get_exchange_name_display()} - {self.exchange_num}"
+        return f"{self.exchange_category_id} : {self.local} - {self.get_exchange_name_display()} - {self.exchange_num}"
     
 class Vision(models.Model):
     vision_id = models.AutoField(primary_key=True)
@@ -120,6 +139,7 @@ class Vision(models.Model):
 
     class Meta:
         ordering = ['-created_at']  # 최신 순으로 정렬
+        verbose_name_plural = "(지자체관련 모델) Visions"
 
     def __str__(self):
-        return f"[{self.local.local_name}] {self.vision_title}"
+        return f"{self.vision_id} : [{self.local.local_name}] {self.vision_title}"
