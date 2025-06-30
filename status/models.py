@@ -35,6 +35,9 @@ class NationDashboard(models.Model):
     nation_num_tend = models.TextField(verbose_name="교류 사업 수 추이 설명")
     # dash_image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.nation} 대시보드"
+
 class LocalDashboard(models.Model):
     local_dash_id = models.AutoField(primary_key=True)
     local = models.OneToOneField(LocalGoverment, on_delete=models.CASCADE)
@@ -46,6 +49,9 @@ class LocalDashboard(models.Model):
     local_ratio_explain_detail = models.TextField(verbose_name="주요 교류국 순위 상세 설명")
     local_category_explain = models.TextField(verbose_name="주요 교류 분야 설명")
     local_vision_explain = models.TextField(verbose_name="비전 설명")
+
+    def __str__(self):
+        return f"{self.local} 대시보드"
 
 class ExchangeData(models.Model):
     CATEGORIES = [
@@ -68,3 +74,52 @@ class ExchangeData(models.Model):
 
     def __str__(self):
         return f"{self.exchange_nation} - {self.get_exchange_category_display()} - {self.exchange_name_kr}"
+    
+class LocalData(models.Model):
+    LOCAL_CATEGORIES = [
+        ('sister', '자매도시'),
+        ('friendly', '우호결연 도시')
+    ]
+    local_data_id = models.AutoField(primary_key=True)
+    origin_city = models.ForeignKey(LocalGoverment, on_delete=models.CASCADE)
+    partner_country = models.CharField(max_length=50, verbose_name="대상 국가")
+    partner_city = models.CharField(max_length=70, verbose_name="대상 도시")
+    category = models.CharField(max_length=50, choices=LOCAL_CATEGORIES, verbose_name="도시 구분")
+    agreement_date = models.DateField(verbose_name="결연일자")
+
+    def __str__(self):
+        return f"{self.origin_city} - {self.partner_city} {"("+self.get_category_display()+")"}"
+
+# 주요 교류 분야
+class ExchangeCategory(models.Model):
+    CATEGORIES = [
+        ('health', '보건/환경/기술'),
+        ('edu', '교육/역량강화'),
+        ('culture', '문화/공공외교'),
+        ('system', '제도/행정/포용'),
+        ('etc', '기타'),
+    ]
+
+    local = models.ForeignKey(LocalGoverment, on_delete=models.CASCADE, related_name='exchange_category_relations')
+    exchange_name = models.CharField(max_length=50, choices=CATEGORIES, verbose_name="교류 분야 이름")
+    exchange_num = models.PositiveIntegerField(verbose_name="교류 분야 수(또는 순위)")
+
+    class Meta:
+        unique_together = ('local', 'exchange_name') 
+
+    def __str__(self):
+        return f"{self.local} - {self.get_exchange_name_display()} - {self.exchange_num}"
+    
+class Vision(models.Model):
+    vision_id = models.AutoField(primary_key=True)
+    vision_category = models.CharField(max_length=30, verbose_name="분류")
+    local = models.ForeignKey(LocalGoverment, on_delete=models.CASCADE)
+    vision_title = models.CharField(max_length=50, verbose_name="제목")
+    vision_content = models.TextField(verbose_name="내용")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일자")
+
+    class Meta:
+        ordering = ['-created_at']  # 최신 순으로 정렬
+
+    def __str__(self):
+        return f"[{self.local.local_name}] {self.vision_title}"
