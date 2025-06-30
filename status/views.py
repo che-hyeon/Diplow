@@ -28,6 +28,8 @@ class NationDashViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.R
             return NationDashboardCategorySerializer
         elif self.action == 'recent':
             return NationDashboardRecentSerializer
+        elif self.action == 'year':
+            return NationDashboardYearSerializer
         # 기본 serializer
         return NationDashboardMapSerializer
 
@@ -46,6 +48,69 @@ class NationDashViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.R
     
     @action(detail=False, methods=['get'], url_path='recent')
     def recent(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='year')
+    def year(self, request):
+        queryset =self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+
+class LocalDashViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    queryset = LocalDashboard.objects.all()
+    serializer_class = LocalDashboardSerializer
+
+    def filter_by_local(self, queryset):
+        local_name = self.request.query_params.get('local')
+        if local_name:
+            queryset = queryset.filter(local__local_name=local_name)
+        return queryset
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return self.filter_by_local(queryset)
+
+    def get_serializer_class(self):
+        if self.action == 'map':
+            return LocalDashboardMapSerializer
+        elif self.action == 'city':
+            return LocalDashboardCitySerializer
+        elif self.action == 'city_ranking':
+            return LocalDashboardCityRankingSerializer
+        elif self.action == 'major_exchange':
+            return LocalDashboardMajorSerializer
+        elif self.action == 'vision':
+            return LocalDashboardVisionSerializer
+        return LocalDashboardSerializer
+    
+    @action(detail=False, methods=['get'], url_path='map')
+    def map(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='city')
+    def city(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='city-ranking')
+    def city_ranking(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='major-exchange')
+    def major_exchange(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return custom_response(data=serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='vision')
+    def vision(self, request):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return custom_response(data=serializer.data)
