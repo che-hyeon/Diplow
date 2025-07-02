@@ -96,6 +96,7 @@ class NationDashboardRecentSerializer(serializers.ModelSerializer):
 # year
 class NationDashboardYearSerializer(serializers.ModelSerializer):
     yearly_data_count = serializers.SerializerMethodField(read_only=True)
+    nation_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = NationDashboard
@@ -124,6 +125,9 @@ class NationDashboardYearSerializer(serializers.ModelSerializer):
 
         # 정렬된 dict로 변환 (선택)
         return {str(year): year_count[year] for year in sorted(year_count)}
+    
+    def get_nation_name(self, obj):
+        return obj.nation.nation_name
 
 class LocalDashboardSerializer(serializers.ModelSerializer):
     class Meta:

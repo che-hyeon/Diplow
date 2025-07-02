@@ -81,8 +81,8 @@ class ExchangeData(models.Model):
     exchange_nation = models.ForeignKey(Nation, on_delete=models.CASCADE)
     start_year = models.PositiveIntegerField(null=True, blank=True, verbose_name="시작 연도")
     end_year = models.PositiveIntegerField(null=True, blank=True, verbose_name="종료 연도")
-    others = models.TextField(verbose_name="기타사항")
-    pub_date = models.DateField(verbose_name="등록일")
+    others = models.TextField(verbose_name="기타사항", null=True, blank=True)
+    pub_date = models.DateField(verbose_name="등록일", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "[공공데이터] (국가관련 모델) ExchangeDatas"
