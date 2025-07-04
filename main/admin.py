@@ -5,7 +5,7 @@ from .models import *
 @admin.register(MovementData)
 class MovementDataAdmin(admin.ModelAdmin):
 
-    list_display = ('movement_data_id', 'category', 'title_kr', 'pub_date')
+    list_display = ('movement_data_id', 'nation', 'title_kr', 'pub_date')
     list_display_links = list_display
 
 @admin.register(DiplomacyEvent)
