@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'requests',
+    'celery',
 
     'main',
     'recommend',
@@ -84,6 +85,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_RESULT_BACKEND = None
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Seoul'
+CELERY_ENABLE_UTC=False
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
