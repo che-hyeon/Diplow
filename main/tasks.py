@@ -88,9 +88,8 @@ def load_movement_data_task():
     failed = []
 
     nations = Nation.objects.all()
-
+    logger.info("이동 데이터 로딩 시작")
     for base_url in base_urls:
-        logger.info("이동 데이터 로딩 시작")
         try:
             count_url = f"https://api.odcloud.kr/api{base_url}?page=1&perPage=1&returnType=json&serviceKey={service_key}"
             try:
@@ -179,4 +178,5 @@ def load_movement_data_task():
 
         except Exception as e:
             failed.append({"url": base_url, "reason": f"기본 URL 반복 에러: {str(e)}"})
+    logger.info("이동 데이터 로딩 종료")
 
