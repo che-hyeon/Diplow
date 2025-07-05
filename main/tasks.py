@@ -1,3 +1,4 @@
+from datetime import datetime
 from project.celery import app
 from status.models import Nation
 from .models import MovementData
@@ -85,6 +86,8 @@ def load_movement_data_task():
 
     saved = []
     failed = []
+
+    nations = Nation.objects.all()
 
     for base_url in base_urls:
         logger.info("이동 데이터 로딩 시작")
@@ -176,4 +179,4 @@ def load_movement_data_task():
 
         except Exception as e:
             failed.append({"url": base_url, "reason": f"기본 URL 반복 에러: {str(e)}"})
-    logger.info("이동 데이터 로딩 완료")
+
