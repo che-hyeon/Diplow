@@ -24,7 +24,7 @@ class TendDataKRViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         return self.filter_by_nation(self.queryset)
     
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        queryset = self.get_queryset()[:4]
         serializer = self.get_serializer(queryset, many=True)
         return custom_response(data=serializer.data)
     
