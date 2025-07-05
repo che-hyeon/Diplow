@@ -104,7 +104,7 @@ DATABASES = {
     }
 }
 
-GPT_API_KEY=env('GPT_API_KEY')
+# GPT_API_KEY=env('GPT_API_KEY')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
