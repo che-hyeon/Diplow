@@ -104,6 +104,7 @@ DATABASES = {
     }
 }
 
+# GPT_API_KEY=env('GPT_API_KEY')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -156,7 +157,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
 
-    'https://diplow-backend.shop'
+    'https://diplow-backend.shop',
+    'https://diplow.netlify.app'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -169,4 +171,5 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
 
     'https://diplow-backend.shop',
+    'https://diplow.netlify.app'
 ]
