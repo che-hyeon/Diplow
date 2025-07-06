@@ -47,9 +47,10 @@ class NationDashboardCategorySerializer(serializers.ModelSerializer):
         return obj.nation.nation_name
     
     def get_category_ratio(self, obj):
-        nation= obj.nation
+        nation = obj.nation
 
-        exchanges = ExchangeData.objects.filter(exchange_nation=nation)
+        # "etc" 카테고리를 제외하고 필터링
+        exchanges = ExchangeData.objects.filter(exchange_nation=nation).exclude(exchange_category='etc')
 
         category_counts = exchanges.values('exchange_category').annotate(count=Count('exchange_id'))
         total = exchanges.count() or 1  # 0으로 나누기 방지용
@@ -89,7 +90,7 @@ class NationDashboardRecentSerializer(serializers.ModelSerializer):
     def get_example(self, obj):
         recent_exchanges = ExchangeData.objects.filter(
             exchange_nation=obj.nation
-        ).order_by('-pub_date')[:3]
+        ).order_by('-end_year')[:3]
 
         return ExchangeDataSerializer(recent_exchanges, many=True, context=self.context).data
 
