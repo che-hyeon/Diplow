@@ -16,5 +16,9 @@ urlpatterns = [
     path('', include(nation_info_router.urls)),
     path('', include(environ_router.urls)),
 
+    path("recommend/gpt/public-diplomacy", PublicDiplomacyGPTView.as_view(), name="public-diplomacy-gpt"),
+
+    path("recommend/pdf/public-diplomacy", MakePDFView.as_view(), name="public-diplomacy-pdf"),
+
     path('recommend/load-environ', load_environ_data)
 ]

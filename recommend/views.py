@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.shortcuts import render
 from rest_framework import viewsets, mixins
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from .serializers import *
 from utils.responses import custom_response
@@ -9,6 +10,13 @@ from status.serializers import NationSerializer
 import os, environ
 from pathlib import Path
 import requests
+
+import json
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+import pdfkit
+
 # Create your views here.
 
 class EnvironIssueDataViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
@@ -126,3 +134,133 @@ class EnvironIssueDataAPI(viewsets.ViewSet):
             code=200,
             message="완료"
         )
+    
+# GPT 호출
+import openai
+from openai import OpenAI
+from django.conf import settings
+
+class PublicDiplomacyGPTView(APIView):
+    def post(self, request):
+        local = request.data.get("local", "")
+        if not local:
+            return custom_response(data=None, message="local field는 필수 입니다.", code=400, success=False)
+        nation = request.data.get("nation", "")
+        if not nation:
+            return custom_response(data=None, message="nation field는 필수 입니다.", code=400, success=False)
+        category = request.data.get("category", "")
+        if not category:
+            return custom_response(data=None, message="category field는 필수 입니다.", code=400, success=False)
+        purpose = request.data.get("purpose", "")
+        if not purpose:
+            return custom_response(data=None, message="purpose field는 필수 입니다.", code=400, success=False)
+        client = OpenAI(api_key=getattr(settings, "GPT_API_KEY"))
+
+        full_message = (
+            f"지방자치단체: {local}\n"
+            f"탐색 대상 국가: {nation}\n"
+            f"교류 분야: {category}\n"
+            f"협력 목적: {purpose}\n\n"
+            "위 정보를 바탕으로 전략 보고서를 JSON 형식으로 작성해 주세요.\n"
+            "JSON 구조는 다음과 같습니다:\n"
+            "{\n"
+            '  "recommended_strategy_types": [\n'
+            '    {"type": "유형명", "description": "설명"}\n'
+            '  ],\n'
+            '  "exchange_cooperation_projects": [\n'
+            '    {"project_name": "사업명", "description": "100자 내외 설명"}\n'
+            '  ],\n'
+            '  "summary_of_recommendations": {\n'
+            '    "major_issues_by_country": "300자 내외 설명",\n'
+            '    "local_government_diplomatic_assets": "300자 내외 설명",\n'
+            '    "case_study_based_analysis": "300자 내외 설명"\n'
+            '  }\n'
+            "}\n"
+            "응답은 반드시 JSON 형식으로, 코드블록 없이 순수 JSON 텍스트로만 보내 주세요."
+        )
+
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "당신은 지방외교 및 도시외교 전략 전문가입니다\n"
+                            "사용자는 지방자치단체의 국제협력 실무자이며, 특정 지자체의 교류 이력과 탐색 국가의 동향 바탕으로 교류 전략 보고서를 희망합니다\n"
+                            "사용자의 선택값(지자체, 대상국가, 교류 분야, 협력 목적)을 기반으로 형식을 갖춘 명료한 전략 보고서를 아래의 양식에 맞춰 작성해 주세요\n"
+                            "1. 추천 교류 전략 유형: 자매결연, 교류외교, 기여외교, 매체외교, 문화외교 중 가장 적합한 외교 유형 2가지를 선택, 선택된 유형의 정의(100자 내외)와 함께 서술.\n"
+                            "2. 교류 협력 사업 제안: 교류 전략 수립 관련 인사이트를 바탕으로 사용자의 선택값을 충족하는 지방자치단체에 효과적이고 퀄리티 있는 국제교류 및 협력사업의 예시를 100자 내외의 설명과 함께 3가지 제안.\n"
+                            "3. 추천 근거 요약.zip: 1) 국가별 주요 이슈 동향, 2) 우리 지자체 외교 자산, 3) 기존 사례 기반 분석을 골자로 제시."
+                            "- 국가별 주요 이슈 동향: 탐색 대상 국가의 주요 이슈를 설명.\n"
+                            "- 우리 지자체 외교 자산: 선택한 지자체가 보유한 외교적 자산에 관해 설명.\n"
+                            "- 기존 사례 기반 분석: 교류 협력 사업 제안의 탐색에 사용되었던 기존의 실제 협력 사례들을 설명.\n\n"
+                            "※ 3번 항목의 세 가지 소항목은 각각 300자 내외로 자세히 작성해 주세요."
+                        )
+                    },
+                    {"role": "user", "content": full_message}
+                ]
+            )
+
+            answer = completion.choices[0].message.content
+            parsed_answer = json.loads(answer)
+            return custom_response(
+                data=parsed_answer
+            )
+
+        except Exception as e:
+            return custom_response(data={"error": str(e)}, code=500, success=False, message=str(e))
+        
+class MakePDFView(APIView):
+    def post(self, request):
+        local = request.data.get('local', '')
+        nation = request.data.get('nation', '')
+        if not local or not nation:
+            return custom_response(data=None, message="local과 nation은 필수 필드 입니다.", code=400, success=False)
+        
+        strategies = request.data.get('strategies', [])
+        if not isinstance(strategies, list):
+            return custom_response(
+                data=None,
+                message="error: strategies는 리스트이어야합니다.",
+                code=400,
+                success=False
+            )
+        
+        suggestions = request.data.get('suggestions', [])
+        if not isinstance(suggestions, list):
+            return custom_response(
+                data=None,
+                message="error: suggestions는 리스트이어야합니다.",
+                code=400,
+                success=False
+            )
+        
+        summaries = request.data.get('summaries', [])
+        if not isinstance(summaries, list):
+            return custom_response(
+                data=None,
+                message="error: summaries는 리스트이어야합니다.",
+                code=400,
+                success=False
+            )
+        
+        context = {
+            'local': local,
+            'nation': nation,
+            'strategies': strategies,
+            'suggestions': suggestions,
+            'summaries': summaries,
+        }
+
+        html_string = render_to_string('recommend/pdf_template.html', context)
+
+        config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+
+        pdf_output = pdfkit.from_string(html_string, False, configuration=config)
+
+        # 응답 반환
+        response = HttpResponse(pdf_output, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="report.pdf"'
+        return response
+
