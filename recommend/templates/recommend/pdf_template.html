@@ -13,28 +13,59 @@
     <h1>{{ nation }} - {{ local }} 외교 전략 보고서</h1>
 
     <div class="section">
-        <h2>요약 (Summaries)</h2>
+        <h2>추천교류 전략 유형</h2>
         <ul>
-            {% for item in summaries %}
-                <li>{{ item }}</li>
+            {% for strategy_type in strategy_types %}
+                <li>{{ strategy_type.type }} | {{ strategy_type.description }}</li>
             {% endfor %}
         </ul>
     </div>
 
     <div class="section">
-        <h2>전략 (Strategies)</h2>
+        <h2>교류 협력 사업 제안</h2>
         <ul>
-            {% for strategy in strategies %}
-                <li><strong>{{ strategy.title }}</strong>: {{ strategy.content }}</li>
+            {% for exchange_project in exchange_projects %}
+                <li>{{ exchange_project.project_name }} | {{ exchange_project.description }}</li>
             {% endfor %}
         </ul>
     </div>
 
     <div class="section">
-        <h2>제언 (Suggestions)</h2>
+        <h2>추천 근거 요약집</h2>
+        <h5>대상국 교류 협력 수요</h5>
+        <p>{{ summary.major_issues_by_country}}</p>
+        <h5>우리 지자체 외교 자산</h5>
+        <p>{{ summary.local_government_diplomatic_assets }}</p>
+        <h5>기존 사례 기반 분석</h5>
+        <p>{{ summary.case_study_based_analysis }}</p>
+    </div>
+
+    <div class="section">
+        <h2>{{ nation }} 기본 정보</h2>
         <ul>
-            {% for suggestion in suggestions %}
-                <li>{{ suggestion }}</li>
+            <h5>{{ nation }} 일반 현황</h5>
+            <p>{{ general_overview }}</p>
+            <h5>{{nation}} 경제현황</h5>
+            <p>{{economic_overview}}</p>
+            <h5>우리나라와의 관계</h5>
+            <p>{{relation_korea}}</p>
+        </ul>
+    </div>
+
+    <div class="section">
+        <ul>
+            {% for recent_movement in recent_movements %}
+                <li>제목: {{ recent_movement.title_kr }}</li>
+                <p>내용: {{recent_movement.content_kr }}</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <ul>
+            {% for environ_issue in environ_issues %}
+                <li>내용: {{ environ_issue.environ_data_title }}</li>
+                <p>등록일: {{ environ_issue.pub_date }}</p>
             {% endfor %}
         </ul>
     </div>

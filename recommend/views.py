@@ -7,6 +7,9 @@ from .serializers import *
 from utils.responses import custom_response
 from status.serializers import NationSerializer
 
+from main.models import MovementData
+from main.serializers import MovementDataKRSerializer
+
 import os, environ
 from pathlib import Path
 import requests
@@ -215,52 +218,70 @@ class MakePDFView(APIView):
     def post(self, request):
         local = request.data.get('local', '')
         nation = request.data.get('nation', '')
+
         if not local or not nation:
             return custom_response(data=None, message="local과 nation은 필수 필드 입니다.", code=400, success=False)
-        
-        strategies = request.data.get('strategies', [])
-        if not isinstance(strategies, list):
+
+        strategy_types = request.data.get('recommended_strategy_types', [])
+        if not isinstance(strategy_types, list):
             return custom_response(
                 data=None,
-                message="error: strategies는 리스트이어야합니다.",
+                message="error: recommended_strategy_types는 리스트여야 합니다.",
+                code=400,
+                success=False
+            )
+
+        exchange_projects = request.data.get('exchange_cooperation_projects', [])
+        if not isinstance(exchange_projects, list):
+            return custom_response(
+                data=None,
+                message="error: exchange_cooperation_projects는 리스트여야 합니다.",
+                code=400,
+                success=False
+            )
+
+        summary_data = request.data.get('summary_of_recommendations', {})
+        if not isinstance(summary_data, dict):
+            return custom_response(
+                data=None,
+                message="error: summary_of_recommendations는 딕셔너리여야 합니다.",
                 code=400,
                 success=False
             )
         
-        suggestions = request.data.get('suggestions', [])
-        if not isinstance(suggestions, list):
-            return custom_response(
-                data=None,
-                message="error: suggestions는 리스트이어야합니다.",
-                code=400,
-                success=False
-            )
-        
-        summaries = request.data.get('summaries', [])
-        if not isinstance(summaries, list):
-            return custom_response(
-                data=None,
-                message="error: summaries는 리스트이어야합니다.",
-                code=400,
-                success=False
-            )
-        
+        try:
+            nation_obj = Nation.objects.get(nation_name=nation)
+        except Nation.DoesNotExist:
+            return custom_response(data=None, message="해당 국가를 찾을 수 없습니다.", code=404, success=False)
+
+        general_overview = nation_obj.nation_info
+        economic_overview = nation_obj.nation_economic
+        relation_korea = nation_obj.nation_relation
+
+        recent_movements_qs = MovementData.objects.filter(nation=nation_obj).order_by('-pub_date')[:4]
+        recent_movements = MovementDataKRSerializer(recent_movements_qs, many=True).data
+
+        environ_issues_qs = EnvironIssueData.objects.filter(nation=nation_obj).order_by('-pub_date')[:5]
+        environ_issues = EnvironIssueDataSerializer(environ_issues_qs, many=True).data
+
         context = {
             'local': local,
             'nation': nation,
-            'strategies': strategies,
-            'suggestions': suggestions,
-            'summaries': summaries,
+            'strategy_types': strategy_types,
+            'exchange_projects': exchange_projects,
+            'summary': summary_data,
+            'general_overview': general_overview,
+            'economic_overview': economic_overview,
+            'relation_korea': relation_korea,
+            'recent_movements': recent_movements,
+            'environ_issues': environ_issues
         }
 
         html_string = render_to_string('recommend/pdf_template.html', context)
 
         config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
-
         pdf_output = pdfkit.from_string(html_string, False, configuration=config)
 
-        # 응답 반환
         response = HttpResponse(pdf_output, content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="report.pdf"'
         return response
-

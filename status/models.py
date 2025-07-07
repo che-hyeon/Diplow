@@ -11,6 +11,8 @@ class Nation(models.Model):
     nation_id = models.AutoField(primary_key=True)
     nation_name = models.CharField(max_length=20, verbose_name="국가 이름")
     nation_info = models.TextField(verbose_name="국가 정보")
+    nation_economic = models.TextField(null=True, blank=True, verbose_name="국가 경제현황")
+    nation_relation = models.TextField(null=True, blank=True, verbose_name="우리나라와의 관계")
     # nation_image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
 
     class Meta:
