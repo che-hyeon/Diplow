@@ -279,7 +279,11 @@ class MakePDFView(APIView):
 
         html_string = render_to_string('recommend/pdf_template.html', context)
 
-        config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        local = env('LOCAL')
+        if(local==True):
+            config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        else:
+            config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
         pdf_output = pdfkit.from_string(html_string, False, configuration=config)
 
         response = HttpResponse(pdf_output, content_type='application/pdf')
