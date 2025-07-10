@@ -131,6 +131,11 @@ SEOUL_API_KEY = env('SEOUL_API_KEY')
 def extract_korean_only(text):
     return ''.join(re.findall(r'[가-힣]+', text))
 
+health_keywords = ["기술", "보건", "환경", "감염병", "재난", "대응", "시스템", "ICT", "기자재", "폐기물", "스마트", "에너지", "정보", "분석", "대응지침", "운영지침"]
+edu_keywords = ["교육", "역량", "한국학", "콘텐츠", "커리큘럼", "연수", "교수요원", "평가", "프로그램", "학습", "훈련", "교육과정", "자격증"]
+culture_keywords = ["문화", "관광", "한류", "커뮤니티", "참여", "사회통합", "한국어", "언어", "전시", "예술", "지역사회", "인식개선", "시민행사", "외교"]
+system_keywords = ["정책", "제도", "부동산", "시스템", "행정", "모니터링", "평가", "수립", "전문가 파견", "법제도", "정보관리", "사업관리", "포용"]
+
 class ExchangeDataAPI(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
@@ -186,13 +191,14 @@ class ExchangeDataAPI(viewsets.ViewSet):
 
                         # 지원분야 → exchange_category 변환
                         field = item.get("지원분야", "")
-                        if "기술" in field or "보건" in field or "환경" in field:
+
+                        if any(keyword in field for keyword in health_keywords):
                             category = "health"
-                        elif "교육" in field or "역량" in field:
+                        elif any(keyword in field for keyword in edu_keywords):
                             category = "edu"
-                        elif "문화" in field or "외교" in field:
+                        elif any(keyword in field for keyword in culture_keywords):
                             category = "culture"
-                        elif "제도" in field or "행정" in field or "포용" in field:
+                        elif any(keyword in field for keyword in system_keywords):
                             category = "system"
                         else:
                             category = "etc"
@@ -299,18 +305,17 @@ class ExchangeDataAPI(viewsets.ViewSet):
                     exchange_content = item.get("주요내용")
 
                     # 유형 분류
-                    type_field = item.get("교류유형", "")
-                    if "보건" in type_field or "기술" in type_field or "환경" in type_field:
+                    field = item.get("교류유형", "")
+                    if any(keyword in field for keyword in health_keywords):
                         category = "health"
-                    elif "교육" in type_field or "역량" in type_field:
+                    elif any(keyword in field for keyword in edu_keywords):
                         category = "edu"
-                    elif "문화" in type_field or "외교" in type_field or "관광" in type_field:
+                    elif any(keyword in field for keyword in culture_keywords):
                         category = "culture"
-                    elif "행정" in type_field or "제도" in type_field or "포용" in type_field:
+                    elif any(keyword in field for keyword in system_keywords):
                         category = "system"
                     else:
                         category = "etc"
-
                     others = f"""
                         광역시도: {item.get('광역시도', '')}
                         기초지자체: {item.get('기초지자체', '')}
@@ -428,13 +433,13 @@ class ExchangeDataAPI(viewsets.ViewSet):
 
                     # 유형 분류
                     detail = item.get("detail_business", "")
-                    if "보건" in detail or "기술" in detail or "환경" in detail:
+                    if any(keyword in detail for keyword in health_keywords):
                         category = "health"
-                    elif "교육" in detail or "역량" in detail or "한국학" in detail or "한국어" in detail:
+                    elif any(keyword in detail for keyword in edu_keywords):
                         category = "edu"
-                    elif "문화" in detail or "외교" in detail or "관광" in detail or "한류" in detail:
+                    elif any(keyword in detail for keyword in culture_keywords):
                         category = "culture"
-                    elif "행정" in detail or "제도" in detail or "포용" in detail:
+                    elif any(keyword in detail for keyword in system_keywords):
                         category = "system"
                     else:
                         category = "etc"
