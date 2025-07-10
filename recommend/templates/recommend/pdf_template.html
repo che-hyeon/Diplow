@@ -37,7 +37,7 @@
         <h2>교류 협력 사업 제안</h2>
         <ul>
             {% for exchange_project in exchange_projects %}
-                <li>{{ exchange_project.project_name }} | {{ exchange_project.description }}</li>
+                <li>{{ exchange_project.project_name }} | {{ exchange_project.project_category }} {{ exchange_project.description }}</li>
             {% endfor %}
         </ul>
     </div>
