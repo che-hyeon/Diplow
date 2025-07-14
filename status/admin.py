@@ -19,7 +19,7 @@ class ExchangeDataAdmin(admin.ModelAdmin):
 @admin.register(LocalData)
 class LocalDataAdmin(admin.ModelAdmin):
 
-    list_display = ('local_data_id', 'origin_city', 'partner_city', 'category')
+    list_display = ('local_data_id', 'origin_city', 'partner_country', 'partner_city', 'category')
     list_display_links = list_display
 
 @admin.register(ExchangeCategory)
