@@ -1,83 +1,250 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>외교 전략 보고서</title>
-    <style>
-        body {
-            font-family: 'Nanum Gothic', sans-serif;
-            padding: 30px;
-            line-height: 1.6;
-        }
-        h1, h2 {
-            color: #2c3e50;
-        }
-        .section {
-            margin-bottom: 30px;
-        }
-        .monospace {
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-        }
-    </style>
-</head>
-<body>
-    <h1>{{ nation }} - {{ local }} 외교 전략 보고서</h1>
-
-    <div class="section">
-        <h2>추천교류 전략 유형</h2>
-        <ul>
-            {% for strategy_type in strategy_types %}
-                <li>{{ strategy_type.type }} | {{ strategy_type.description }}</li>
-            {% endfor %}
-        </ul>
+  </head>
+  <body>
+    <div class="title">
+      <h1>{{ nation }} - {{ local }} 교류협력 전략 추천(안)</h1>
+      <p>(제공: 공공데이터 기반 지방외교 통합지원 플랫폼, diplow)</p>
     </div>
 
     <div class="section">
-        <h2>교류 협력 사업 제안</h2>
-        <ul>
-            {% for exchange_project in exchange_projects %}
-                <li>{{ exchange_project.project_name }} | {{ exchange_project.project_category }} {{ exchange_project.description }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>추천 근거 요약집</h2>
-        <h5>대상국 교류 협력 수요</h5>
-        <p>{{ summary.major_issues_by_country }}</p>
-        <h5>우리 지자체 외교 자산</h5>
-        <p>{{ summary.local_government_diplomatic_assets }}</p>
-        <h5>기존 사례 기반 분석</h5>
-        <p>{{ summary.case_study_based_analysis }}</p>
-    </div>
-
-    <div class="section">
-        <h2>{{ nation }} 기본 정보</h2>
-        <h5>{{ nation }} 일반 현황</h5>
-        <p>{{ general_overview }}</p>
-        <h5>{{ nation }} 경제현황</h5>
-        <p>{{ economic_overview }}</p>
-        <h5>우리나라와의 관계</h5>
-        <p>{{ relation_korea }}</p>
-    </div>
-
-    <div class="section">
-        <h2>최근 주요 동향</h2>
-        {% for recent_movement in recent_movements %}
-            <div class="monospace">
-                <strong>제목:</strong> {{ recent_movement.title_kr }}<br>
-                <strong>내용:</strong> {{ recent_movement.content_kr }}
-            </div>
+      <h2>추천교류 전략 유형</h2>
+      <ul class="styled-list">
+        {% for strategy_type in strategy_types %}
+        <!-- prettier-ignore -->
+        <li><strong>{{ strategy_type.type }}</strong>: {{ strategy_type.description }}</li>
         {% endfor %}
+      </ul>
     </div>
 
     <div class="section">
-        <h2>환경 관련 이슈</h2>
-        {% for environ_issue in environ_issues %}
-            <p><strong>내용:</strong> {{ environ_issue.environ_data_title }}</p>
-            <p><strong>등록일:</strong> {{ environ_issue.pub_date }}</p>
+      <h2>교류 협력 사업 제안</h2>
+      <ul class="styled-list">
+        {% for exchange_project in exchange_projects %}
+        <!-- prettier-ignore -->
+        <li><strong>{{ exchange_project.project_name }}</strong>: {{ exchange_project.description }}</li>
         {% endfor %}
+      </ul>
     </div>
-</body>
+    <!-- prettier-ignore -->
+    <div class="boxContainer">
+      <h2>【 추천 근거 요약집 】</h2>
+      <p>
+        <strong>▶ (대상국 교류 협력 수요)</strong> {{ summary.major_issues_by_country }}
+      </p>
+      
+      <p><strong>▶ (우리 지자체 외교 자산)</strong> {{ summary.local_government_diplomatic_assets}}</p>
+      <p><strong>▶ (기존 사례 기반 분석)</strong> {{ summary.case_study_based_analysis }}</p>
+    </div>
+    <!-- prettier-ignore -->
+    <div class="section">
+      <h2>{{ nation }} 기본 정보</h2>
+      <div class="infoBlock">
+        <p class="infoTitle">❏ {{ nation }} 일반 현황</p>
+        <p class="infoBody">ㅇ {{ general_overview }}</p>
+      </div>
+      <div class="infoBlock">
+        <p class="infoTitle">❏ {{ nation }} 경제현황</p>
+        <p class="infoBody">ㅇ {{ economic_overview }}</p>
+      </div>
+      <div class="infoBlock">
+        <p class="infoTitle">❏ 우리나라와의 관계</p>
+        <p class="infoBody">ㅇ {{ relation_korea }}</p>
+      </div>
+  </div>
+
+  <div class="section">
+    <h2>{{ nation }} 주요 동향</h2>
+    <div class="dashBoxList">
+      {% for recent_movement in recent_movements %}
+      <div class="dashedBox">
+        <div class="dashedBoxHeaderBox">
+          <div class="dashedBoxHeader">{{ recent_movement.title_kr }}</div>
+        </div>
+        <div class="dashedBoxBody">
+          <p>▶ {{ recent_movement.content_kr }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  </div>
+  </body>
+
+  <style>
+    body {
+      font-family: "Nanum Gothic", sans-serif;
+      /* font-family: "휴먼명조", "HumanMJ", serif; */
+      padding: 30px;
+      line-height: 1.6;
+    }
+
+    .section {
+      margin-bottom: 50px;
+    }
+
+    .info p {
+      margin-bottom: 30px;
+      line-height: 0.3;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      font-weight: bold;
+      display: inline;
+      background: linear-gradient(#fff3db);
+    }
+    .monospace {
+      white-space: pre-wrap;
+    }
+
+    .title {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-self: center;
+      align-items: center;
+    }
+
+    .title h1 {
+      position: relative;
+      font-size: 30px;
+      color: black;
+      margin: 0 0 10px;
+      font-weight: 700;
+      padding-bottom: 10px;
+      border-bottom: 1px solid black;
+      text-align: center;
+    }
+
+    .title h1::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: black;
+      transform: translateY(4px);
+    }
+
+    .title p {
+      font-size: 20px;
+      justify-content: flex-end;
+      width: 100%;
+      display: flex;
+    }
+
+    .styled-list {
+      list-style: none;
+      padding-left: 5px;
+      margin-left: 0;
+      margin-left: 10px;
+    }
+
+    .styled-list li {
+      position: relative;
+      padding-left: 1.5em;
+      margin-bottom: 0.5em;
+      font-size: 25px;
+      line-height: 1.8;
+    }
+
+    .styled-list li::before {
+      content: "❏";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .styled-list li strong {
+      font-weight: bold;
+    }
+
+    .boxContainer {
+      width: 100%;
+      border: 1px solid black;
+      font-size: 22px;
+      margin-bottom: 50px;
+    }
+
+    .boxContainer h2 {
+      width: 100%;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .infoBlock {
+      margin-bottom: 5px;
+    }
+
+    .infoTitle {
+      font-size: 25px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .infoBody {
+      margin-top: 0;
+      font-size: 25px;
+      line-height: 1.5;
+      margin-left: 30px;
+    }
+
+    .dashedBox {
+      border: 2px dashed #999;
+      padding: 20px;
+      margin-top: 40px;
+      /* margin-bottom: 40px; */
+      position: relative;
+    }
+
+.dashedBoxHeaderBox {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: -40px;
+}
+.dashedBoxHeader {
+  font-weight: bold;
+  border: 1px solid #000;
+  font-size: 23px;
+  padding: 5px 10px;
+  text-align: center;
+  background-color: white;
+  align-self: center; 
+  justify-content: center;
+  width: 90%;
+}
+
+.dashedBoxBody {
+      padding-top: 20px;
+      font-size: 22px;
+      line-height: 1.8;
+}
+
+.dashedBoxBody p {
+      margin: 10px 0;
+}
+
+.dashBoxList {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+      gap: 20px;
+}
+
+.infoBlock, .dashedBox {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+  </style>
 </html>
