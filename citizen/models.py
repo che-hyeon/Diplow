@@ -6,7 +6,7 @@ from status.models import LocalGoverment
 class Opinion(models.Model):
     opinion_id = models.AutoField(primary_key=True)
     local = models.ForeignKey(LocalGoverment, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, verbose_name="의견 제목")
+    title = models.TextField(verbose_name="의견 제목")
     content = models.TextField(verbose_name="의견 내용")
     created_at = models.DateTimeField(auto_now_add=True)
 

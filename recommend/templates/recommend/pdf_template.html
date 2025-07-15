@@ -33,11 +33,11 @@
     <div class="boxContainer">
       <h2>【 추천 근거 요약집 】</h2>
       <p>
-        <strong>▶ (대상국 교류 협력 수요)</strong> {{ summary.major_issues_by_country }}
+        <strong>▶ (대상국 교류 협력 수요)</strong>&nbsp;{{ summary.major_issues_by_country }}
       </p>
       
-      <p><strong>▶ (우리 지자체 외교 자산)</strong> {{ summary.local_government_diplomatic_assets}}</p>
-      <p><strong>▶ (기존 사례 기반 분석)</strong> {{ summary.case_study_based_analysis }}</p>
+      <p><strong>▶ (우리 지자체 외교 자산)</strong>&nbsp;{{ summary.local_government_diplomatic_assets}}</p>
+      <p><strong>▶ (기존 사례 기반 분석)</strong>&nbsp;{{ summary.case_study_based_analysis }}</p>
     </div>
     <!-- prettier-ignore -->
     <div class="section">
@@ -80,6 +80,7 @@
       /* font-family: "휴먼명조", "HumanMJ", serif; */
       padding: 30px;
       line-height: 1.6;
+      margin: 0 auto; 
     }
 
     .section {
@@ -92,10 +93,10 @@
     }
 
     .section h2 {
-      font-size: 30px;
+      font-size: 20px;
       font-weight: bold;
       display: inline;
-      background: linear-gradient(#fff3db);
+      background: #fff3db
     }
     .monospace {
       white-space: pre-wrap;
@@ -111,16 +112,19 @@
 
     .title h1 {
       position: relative;
-      font-size: 30px;
+      font-size: 25px;
       color: black;
       margin: 0 0 10px;
       font-weight: 700;
       padding-bottom: 10px;
       border-bottom: 1px solid black;
       text-align: center;
+      word-break: break-word;
+      white-space: normal;
+      text-align: center;
     }
 
-    .title h1::after {
+    /* .title h1::after {
       content: "";
       position: absolute;
       bottom: 0;
@@ -128,14 +132,15 @@
       width: 100%;
       height: 1px;
       background-color: black;
-      transform: translateY(4px);
-    }
+      transform: translateY(10px);
+    } */
 
     .title p {
-      font-size: 20px;
+      font-size: 15px;
       justify-content: flex-end;
       width: 100%;
       display: flex;
+      text-align: end;
     }
 
     .styled-list {
@@ -149,7 +154,7 @@
       position: relative;
       padding-left: 1.5em;
       margin-bottom: 0.5em;
-      font-size: 25px;
+      font-size: 20px;
       line-height: 1.8;
     }
 
@@ -167,14 +172,18 @@
     .boxContainer {
       width: 100%;
       border: 1px solid black;
-      font-size: 22px;
+      font-size: 20px;
       margin-bottom: 50px;
+    }
+
+    .boxContainer p {
+      margin-left: 5px;
     }
 
     .boxContainer h2 {
       width: 100%;
       text-align: center;
-      font-size: 28px;
+      font-size: 19px;
     }
 
     .info {
@@ -187,14 +196,14 @@
     }
 
     .infoTitle {
-      font-size: 25px;
+      font-size: 20px;
       font-weight: bold;
       margin-bottom: 10px;
     }
 
     .infoBody {
       margin-top: 0;
-      font-size: 25px;
+      font-size: 18px;
       line-height: 1.5;
       margin-left: 30px;
     }
@@ -204,30 +213,31 @@
       padding: 20px;
       margin-top: 40px;
       /* margin-bottom: 40px; */
-      position: relative;
     }
 
 .dashedBoxHeaderBox {
   display: flex;
   width: 100%;
   justify-content: center;
+  align-items: center;
   margin-top: -40px;
 }
 .dashedBoxHeader {
   font-weight: bold;
   border: 1px solid #000;
-  font-size: 23px;
+  font-size: 17px;
   padding: 5px 10px;
   text-align: center;
   background-color: white;
   align-self: center; 
-  justify-content: center;
-  width: 90%;
+  /* justify-content: center; */
+  /* width: 90%; */
+   width: fit-content;
 }
 
 .dashedBoxBody {
       padding-top: 20px;
-      font-size: 22px;
+      font-size: 15px;
       line-height: 1.8;
 }
 
@@ -242,9 +252,9 @@
       gap: 20px;
 }
 
-.infoBlock, .dashedBox {
+/* .infoBlock, .dashedBox {
   page-break-inside: avoid;
   break-inside: avoid;
-}
+} */
   </style>
 </html>
